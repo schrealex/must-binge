@@ -37,7 +37,10 @@
       <ul class="game-list">
         <li v-for="game in games" :key="game.id" class="game-item">
           <label v-if="currentlyEditing !== game.id" class="game-item-label">
-            {{ game.title }} {{ game.physical ? 'P' : '' }} {{ game.finished ? 'F' : '' }} {{ game.finishedDLC ? 'F DLC' : '' }}
+            {{ game.title }}
+            <font-awesome-icon v-if="game.physical" :icon="['fas', 'sd-card']"/>
+            <font-awesome-icon v-if="game.finished" :icon="['far', 'flag-checkered']"/>
+            <font-awesome-icon v-if="game.finishedDLC" :icon="['fal', 'download']"/>
           </label>
           <div v-if="currentlyEditing !== game.id">
             <button
