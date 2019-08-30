@@ -5,64 +5,66 @@
       <form class="new-game-form">
         <label class="new-game-label">
           New Game:
-          <input v-model="title" type="text" class="new-game-input" placeholder="Title of the Game"/>
+          <input class="new-game-input" placeholder="Title of the Game" type="text" v-model="title"/>
 
           <label class="new-game-input">
             <input
-              type="checkbox"
-              v-model="physical"
-              class="game-item__checkbox">
+                    class="game-item__checkbox"
+                    type="checkbox"
+                    v-model="physical">
             Has Physical Game
           </label>
 
           <label class="new-game-input">
             <input
-              type="checkbox"
-              v-model="finished"
-              class="game-item__checkbox">
+                    class="game-item__checkbox"
+                    type="checkbox"
+                    v-model="finished">
             Has Finished Game
           </label>
 
           <label class="new-game-input">
             <input
-              type="checkbox"
-              v-model="finishedDLC"
-              class="game-item__checkbox">
+                    class="game-item__checkbox"
+                    type="checkbox"
+                    v-model="finishedDLC">
             Has Finished DLC
           </label>
 
         </label>
-        <button type="submit" @click.prevent="addGame()" class="new-game-button">Add</button>
+        <button @click.prevent="addGame()" class="new-game-button" type="submit">Add</button>
       </form>
       <ul class="game-list">
-        <li v-for="game in games" :key="game.id" class="game-item">
-          <label v-if="currentlyEditing !== game.id" class="game-item-label">
+        <li :key="game.id" class="game-item" v-for="game in games">
+          <label class="game-item-label" v-if="currentlyEditing !== game.id">
             {{ game.title }}
-            <font-awesome-icon v-if="game.physical" :icon="['fas', 'sd-card']"/>
-            <font-awesome-icon v-if="game.finished" :icon="['far', 'flag-checkered']"/>
-            <font-awesome-icon v-if="game.finishedDLC" :icon="['fal', 'download']"/>
           </label>
+          <div class="game-item-icons">
+            <font-awesome-icon :icon="['fas', 'sd-card']" v-if="game.physical"/>
+            <font-awesome-icon :icon="['far', 'flag-checkered']" v-if="game.finished"/>
+            <font-awesome-icon :icon="['fal', 'download']" v-if="game.finishedDLC"/>
+          </div>
           <div v-if="currentlyEditing !== game.id">
             <button
-              @click="editGame(game)"
-              class="game-button">
-              <img src="./assets/pencil.svg" alt="Edit game">
+                    @click="editGame(game)"
+                    class="game-button">
+              <img alt="Edit game" src="./assets/pencil.svg">
             </button>
             <button @click="deleteGame(game)"
                     class="game-button">
-              <img src="./assets/trash.svg" alt="Delete game">
+              <img alt="Delete game" src="./assets/trash.svg">
             </button>
           </div>
 
-          <form v-else class="edit-game-form">
+          <form class="edit-game-form" v-else>
             <label class="edit-game-label">
               Edit:
-              <input type="text" v-model="gametitleEdit" class="edit-game-input">
+              <input class="edit-game-input" type="text" v-model="gametitleEdit">
             </label>
             <button
-              type="submit"
-              class="edit-game-button"
-              @click.prevent="updateGameText(game)">
+                    @click.prevent="updateGameText(game)"
+                    class="edit-game-button"
+                    type="submit">
               Save
             </button>
           </form>
@@ -73,81 +75,81 @@
 </template>
 
 <script>
-  import {gamesCollection} from './firebase';
+	import { gamesCollection } from './firebase';
 
-  export default {
-    name: 'app',
-    data() {
-      return {
-        title: '',
-        physical: true,
-        finished: false,
-        finishedDLC: false,
-        games: [],
-        currentlyEditing: null,
-        gametitleEdit: ''
-      }
-    },
-    firestore() {
-      return {
-        games: gamesCollection.orderBy('title', 'asc')
-      }
-    },
-    methods: {
-      addGame() {
-        gamesCollection.add({
-          title: this.title,
-          physical: this.physical,
-          finished: this.finished,
-          finishedDLC: this.finishedDLC,
-          // id: this.games.length,
-          addedToCollectionAt: new Date()
-        })
-          .then(function (docRef) {
-            console.log("Document written with ID: ", docRef.id);
-          })
-          .catch(function (error) {
-            console.error("Error adding document: ", error);
-          });
-        this.title = '';
-      },
-      updateGame(game) {
-        gamesCollection.doc(game.id).update({...game})
-          .then(() => {
-            console.log("Updated document with ID: ", game.id);
-          })
-          .catch((error) => {
-            console.error("Error updating document: ", error);
-          });
-      },
-      editGame(game) {
-        this.currentlyEditing = game.id;
-        this.gametitleEdit = game.title;
-      },
-      updateGameText(game) {
-        gamesCollection.doc(this.currentlyEditing).update({
-          title: this.gametitleEdit
-        })
-          .then(function () {
-            console.log("Updated document text with ID: ", game.id);
-          })
-          .catch(function (error) {
-            console.error("Error updating document text: ", error);
-          });
-        this.currentlyEditing = null;
-        this.gametitleEdit = '';
-      },
-      deleteGame(game) {
-        gamesCollection.doc(game.id).delete()
-          .then(() => {
-            console.log("Deleted document with ID: ", game.id);
-          })
-          .catch((error) => {
-            console.error("Error deleting document: ", error);
-          });
-      }
-    }
-  }
+	export default {
+		name: 'app',
+		data() {
+			return {
+				title: '',
+				physical: true,
+				finished: false,
+				finishedDLC: false,
+				games: [],
+				currentlyEditing: null,
+				gametitleEdit: ''
+			}
+		},
+		firestore() {
+			return {
+				games: gamesCollection.orderBy('title', 'asc')
+			}
+		},
+		methods: {
+			addGame() {
+				gamesCollection.add({
+					title: this.title,
+					physical: this.physical,
+					finished: this.finished,
+					finishedDLC: this.finishedDLC,
+					// id: this.games.length,
+					addedToCollectionAt: new Date()
+				})
+					.then(function (docRef) {
+						console.log("Document written with ID: ", docRef.id);
+					})
+					.catch(function (error) {
+						console.error("Error adding document: ", error);
+					});
+				this.title = '';
+			},
+			updateGame(game) {
+				gamesCollection.doc(game.id).update({...game})
+					.then(() => {
+						console.log("Updated document with ID: ", game.id);
+					})
+					.catch((error) => {
+						console.error("Error updating document: ", error);
+					});
+			},
+			editGame(game) {
+				this.currentlyEditing = game.id;
+				this.gametitleEdit = game.title;
+			},
+			updateGameText(game) {
+				gamesCollection.doc(this.currentlyEditing).update({
+					title: this.gametitleEdit
+				})
+					.then(function () {
+						console.log("Updated document text with ID: ", game.id);
+					})
+					.catch(function (error) {
+						console.error("Error updating document text: ", error);
+					});
+				this.currentlyEditing = null;
+				this.gametitleEdit = '';
+			},
+			deleteGame(game) {
+				gamesCollection.doc(game.id).delete()
+					.then(() => {
+						console.log("Deleted document with ID: ", game.id);
+					})
+					.catch((error) => {
+						console.error("Error deleting document: ", error);
+					});
+			}
+		}
+	}
 </script>
 
 <style lang="scss">
@@ -201,7 +203,7 @@
     justify-content: space-between;
     padding: 1rem;
     border-radius: 3px;
-    border: 1px solid #FAFAFA;
+    border: 1px solid #fafafa;
     box-shadow: 5px 5px 15px rgba(0, 0, 0, .15);
     margin-top: -3rem;
     background: white;
@@ -292,6 +294,19 @@
   .game-item-label {
     cursor: pointer;
     padding: 1rem;
+    width: 250px;
+    text-align: left;
+  }
+
+  .game-item-icons {
+    width: 70px;
+    margin-left: 20px;
+    display: flex;
+    justify-content: left;
+
+    svg {
+      margin-left: 5px;
+    }
   }
 
   .game-item__checkbox {
